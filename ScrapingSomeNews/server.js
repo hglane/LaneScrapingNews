@@ -5,6 +5,8 @@ var logger = require("morgan");
 var express = require("express");
 var app = express();
 
+var routes = require("./contorollers/controller");
+
 app.use(logger("dev"));
 app.use(
     bodyParser.urlencoded({
@@ -15,11 +17,16 @@ app.use(
 app.use(express.static(process.cwd() + "/public"));
 
 var exphbs = require("express-handlebars");
-app.engine("handlebars",exphbs({defaultLayout: "main"})
+app.engine("handlebars", exphbs({defaultLayout: "main"})
 );
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/ScrapingSomeNews");
+app.use(routes);
+
+const MONGODB_URI = 
+    process.env.MONGODB_URI || "mongodb://localhost/ScrapingSomeNews"
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+
 var db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "connection error:"));
@@ -27,7 +34,7 @@ db.once("open", function () {
     console.log("Goose got me loose!");
 });
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 3000;
 app.listen(port, function() {
     console.log("Rockin' and Rollin' on PORT " + port);
 });

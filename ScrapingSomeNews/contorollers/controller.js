@@ -1,19 +1,25 @@
 var express = require("express");
-var router = express.Router();
+var axios = require("axios");
 var path = require("path");
+var router = express.Router();
 
 var request = require("request");
 var cheerio = require("cheerio");
+var app = express();
 
 var Comment = require("../models/Comment.js");
 var Story = require("../models/Story.js");
 
-router.get("/", function (req, res) {
+app.get("/", function (req, res) {
+    console.log("hit");
+    
     res.redirect("/stories");
 });
 
-router.get("/scrape", function (req, res) {
-    request("http://www.mlb.com", function (error, reaponse, html) {
+app.get("/scrape", function (req, res) {
+    console.log("hit");
+    
+    axios.get("http://www.mlb.com/").then(function(reaponse, html) {
         var $ = cheerio.load(html);
         var titlesArray = [];
 
@@ -58,7 +64,7 @@ router.get("/scrape", function (req, res) {
     });
 });
 
-router.get("/stories", function (req, res) {
+app.get("/stories", function (req, res) {
     Story.find().sort({ _id: -1 }).exec(function (err, doc) {
         if (err) {
             console.log(err);
@@ -69,7 +75,7 @@ router.get("/stories", function (req, res) {
     });
 });
 
-router.get("/stories-json", function (req, res) {
+app.get("/stories-json", function (req, res) {
     Story.find({}, function (err, doc) {
         if (err) {
             console.log(err);
@@ -79,4 +85,4 @@ router.get("/stories-json", function (req, res) {
     });
 });
 
-module.exports = router;
+module.exports = app;

@@ -4,16 +4,18 @@ var Schema = mongoose.Schema;
 var StorySchema = new Schema({
     title: {
         type: String,
-        requried: true
+        required: true
     },
     link: {
         type: String,
         required: true
     },
-    comment: [{
+    comment: [
+    {
         type: Schema.Types.ObjectId,
         ref: "Comment"
-    }]
-})
+    }
+    ]
+});
 var Story = mongoose.model("Story", StorySchema);
 module.exports = Story; 
