@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="shortcut icon" href="assets/img/news-icon.png"
+    <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+
+    <title>Harris's News Network</title>
+</head>
+
+<body>
+    {{> nav/navbar}}
+    <main>
+        <div class="container">
+            {{{ body }}}
+        </div>
+    </main>
+    {{> footer}}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+
+</html>
