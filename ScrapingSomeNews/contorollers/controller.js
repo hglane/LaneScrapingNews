@@ -12,66 +12,37 @@ var Story = require("../models/Story.js");
 
 app.get("/", function (req, res) {
     console.log("hit");
-    
+
     res.redirect("/stories");
 });
 
 app.get("/scrape", function (req, res) {
-    console.log("hit");
-    
-    axios.get("http://www.mlb.com/").then(function(reaponse, html) {
-        var $ = cheerio.load(html);
+    console.log("hit scrape");
+
+    axios.get("https://www.mlb.com/").then(function (res) {
+        var $ = cheerio.load(res.data);
         var titlesArray = [];
 
-        $("p-featured-content__body").each(function (i, element) {
+        $(".p-featured-content__body a").each(function (i, element) {
             var result = {};
 
-            result.title = $(this)
-                .children("a")
-                .text();
-            result.link = $(this)
-                .children("a")
-                .attr("href");
+            result.title = $(this).children(".u-text-h4").text().trim();
+            result.summary = $(this).parent().children(".p-featured-content__text").children(".p-wysiwyg").text().trim();
+            result.link = $(this).attr("href");
 
-            if (result.title !== "" && result.link !== "") {
-
-                if (titlesArray.indexOf(result.title) == -1) {
-                    titlesArray.push(result.title);
-
-                    Story.count({ title: result.title }, function (err, test) {
-                        if (test === 0) {
-                            var entry = new Story(result);
-
-                            entry.save(function (err, doc) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    console.log(doc);
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    console.log("Story already exists.")
-                }
-
-            } else {
-                console.log("Not saved to DB, missing data");
-            }
-
+            Story.create(result).then((dbStory) => {
+                console.log("************************************************************************");
+                console.log(dbStory);
+                console.log("************************************************************************");
+            }).catch(err => console.error(err));
         });
-        res.redirect("/");
+        res.status(200).redirect("/");
     });
 });
 
 app.get("/stories", function (req, res) {
-    Story.find().sort({ _id: -1 }).exec(function (err, doc) {
-        if (err) {
-            console.log(err);
-        } else {
-            var stry = { story: doc };
-            res.render("index", stry);
-        }
+    Story.find().lean().then(function(doc) {
+        res.render("index", {story: doc});
     });
 });
 
@@ -85,8 +56,8 @@ app.get("/stories-json", function (req, res) {
     });
 });
 
-app.get("/clearAll", function(req, res) {
-    Article.remove({}, function(err, doc) {
+app.get("/clearAll", function (req, res) {
+    Article.remove({}, function (err, doc) {
         if (err) {
             console.log(err);
         } else {
@@ -96,7 +67,7 @@ app.get("/clearAll", function(req, res) {
     res.redirect("/articles-json");
 });
 
-app.get("/readStory/:id", function(req, res) {
+app.get("/readStory/:id", function (req, res) {
     var articleId = req.params.id;
     var hbsObj = {
         artile: [],
@@ -105,43 +76,43 @@ app.get("/readStory/:id", function(req, res) {
 
     Story.findOne({ _id: storyId })
         .populate("comment")
-        .exec(function(err, doc) {
+        .exec(function (err, doc) {
             if (err) {
                 console.log("Error: " + err);
             } else {
                 hbsObj.article = doc;
                 var link = doc.link;
-                request(link, function(error, response, html) {
+                request(link, function (error, response, html) {
                     var $ = cheerio.load(html);
 
-                    $(".1col__main").each(function(i, element) {
+                    $(".1col__main").each(function (i, element) {
                         hbsObj.body = $(this)
-                        .children("p-featured-content__body")
-                        .children("p")
-                        .text();
+                            .children("p-featured-content__body")
+                            .children("p")
+                            .text();
 
                         res.render("article", hbsObj);
                         return false;
                     });
                 });
-                
+
             }
         });
 });
 
-app.post("/comment/:id", function(req, res){
+app.post("/comment/:id", function (req, res) {
     var user = req.body.name;
     var content = req.body.comment;
-    var storyId = req.params.id; 
+    var storyId = req.params.id;
 
     var commentObj = {
-        name: user, 
+        name: user,
         body: content
     };
 
     var newComment = new Comment(commentObj);
 
-    newComment.save(function(err, doc) {
+    newComment.save(function (err, doc) {
         if (err) {
             console.log(err);
         } else {
@@ -152,14 +123,14 @@ app.post("/comment/:id", function(req, res){
                 { _id: req.params.id },
                 { $push: { comment: doc._id } },
                 { new: true }
-            ).exec(function(err, doc){
+            ).exec(function (err, doc) {
                 if (err) {
                     console.log(err);
                 } else {
                     res.redirect("/readStory/" + storyId);
                 }
             })
-            
+
         }
     });
 });

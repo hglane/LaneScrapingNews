@@ -6,15 +6,19 @@ var StorySchema = new Schema({
         type: String,
         required: true
     },
+    summary: {
+        type: String,
+        required: true
+    },
     link: {
         type: String,
         required: true
     },
     comment: [
-    {
-        type: Schema.Types.ObjectId,
-        ref: "Comment"
-    }
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Comment"
+        }
     ]
 });
 var Story = mongoose.model("Story", StorySchema);

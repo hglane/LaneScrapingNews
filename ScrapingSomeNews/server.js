@@ -24,7 +24,8 @@ app.set("view engine", "handlebars");
 app.use(routes);
 
 const MONGODB_URI = 
-    process.env.MONGODB_URI || "mongodb://localhost/ScrapingSomeNews"
+     "mongodb://localhost:27017/mlbArticles" 
+    //  || process.env.MONGODB_URI
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 var db = mongoose.connection;
