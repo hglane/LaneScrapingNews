@@ -35,9 +35,11 @@ app.get("/scrape", function (req, res) {
                 console.log(dbStory);
                 console.log("************************************************************************");
             }).catch(err => console.error(err));
+
         });
-        res.status(200).redirect("/");
     });
+    res.status(200).redirect('/stories');
+
 });
 
 app.get("/stories", function (req, res) {
