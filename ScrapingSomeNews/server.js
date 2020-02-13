@@ -7,6 +7,11 @@ var app = express();
 
 var routes = require("./contorollers/controller");
 
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://user:password1@ds049347.mlab.com:49347/heroku_zfk75m1h";
+
+mongoose.connect(MONGODB_URI);
+
+
 app.use(logger("dev"));
 app.use(
     bodyParser.urlencoded({
@@ -23,8 +28,7 @@ app.set("view engine", "handlebars");
 
 app.use(routes);
 
-const MONGODB_URI = 
-     "mongodb://localhost:27017/mlbArticles" 
+//const MONGODB_URI = "mongodb://localhost:27017/mlbArticles" 
     //  || process.env.MONGODB_URI
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
